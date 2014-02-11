@@ -11,6 +11,14 @@
     android:layout_height="wrap_content"
     android:text="Team USA Jumprope Challenge"
   />
+  <TextView
+    android:id="@+id/status"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="status"
+    android:textSize="60sp"
+    android:gravity="center"
+  />
   <LinearLayout
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -22,17 +30,9 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"/>
     <Button
-      android:text="STOP"
-      android:id="@+id/stop_button"
+      android:text="PAUSE"
+      android:id="@+id/pause_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"/>
   </LinearLayout>
-  <TextView
-    android:id="@+id/status"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="status"
-    android:textSize="60sp"
-    android:gravity="center"
-  />
 </LinearLayout>
