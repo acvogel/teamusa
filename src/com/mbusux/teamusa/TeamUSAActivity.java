@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.util.Locale;
 
@@ -39,6 +41,12 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     private int nRounds = 3;
 
     private MediaPlayer mp;
+    private MediaPlayer victory;
+    private MediaPlayer complete;
+
+    private boolean playMusic = true;
+
+    private boolean inRound = false; // whether we are in a round
   
     /** Called when the activity is first created. */
     @Override
@@ -48,13 +56,27 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
         setContentView(R.layout.main);
         ((Button) findViewById(R.id.start_button)).setOnClickListener(this);
         ((Button) findViewById(R.id.pause_button)).setOnClickListener(this);
+        ((Button) findViewById(R.id.music_toggle)).setOnClickListener(this);
         timerText = (TextView) findViewById(R.id.status);
         roundText = (TextView) findViewById(R.id.round);
         tts = new TextToSpeech(this, this);
 
+        ToggleButton musicToggle = (ToggleButton) findViewById(R.id.music_toggle);
+        musicToggle.setChecked(true);
+        musicToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+          public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            handleMusicToggle(isChecked);
+          }
+        });
+        
+
         timer = createWarmupTimer();
         roundText.setText("Team USA Fitness Challenge");
-        mp = MediaPlayer.create(this, R.raw.punchout);
+        //mp = MediaPlayer.create(this, R.raw.punchout);
+        mp = MediaPlayer.create(this, R.raw.punchout_round);
+        mp.setLooping(true);
+        victory = MediaPlayer.create(this, R.raw.victory);
+        complete = MediaPlayer.create(this, R.raw.complete);
     }
 
     @Override
@@ -85,6 +107,8 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
         }
         public void onFinish() {
           updateTimer(0);
+          victory.seekTo(0);
+          victory.start();
           startBreak();
         }
       };
@@ -92,7 +116,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
 
     private CountDownTimer createBreakTimer() {
       updateTimer(breakTime);
-      speak("Break");
+      //speak("Break");
       return new CountDownTimer(breakTime, 1000) {
         public void onTick(long millisUntilFinished) {
           updateTimer(millisUntilFinished);
@@ -109,6 +133,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     }
 
     private CountDownTimer createRoundTimer() {
+      inRound = true;
       updateTimer(roundTime);
       return new CountDownTimer(roundTime, 1000) {
         public void onTick(long millisUntilFinished) {
@@ -119,10 +144,15 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
           }
         }
         public void onFinish() {
+          inRound = false;
           updateTimer(0);
-          mp.stop();
-          mp.prepareAsync();
+          if (playMusic) {
+            mp.stop();
+            mp.prepareAsync();
+          }
           if(isCompleted()) {
+            victory.seekTo(0);
+            victory.start();
             startBreak();
           } else {
             completeWorkout();
@@ -134,6 +164,9 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     private void completeWorkout() {
       roundText.setText("Complete!");
       speak("Workout complete. This is how champions are made.");
+      if(playMusic) {
+        complete.start();
+      }
     }
 
     private void startBreak() {
@@ -152,7 +185,10 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       roundText.setText("Round " + round);
       timer = createRoundTimer();
       timer.start();
-      mp.start();
+      mp.seekTo(0);
+      if (playMusic) {
+        mp.start();
+      }
     }
 
     /** Functioned used to format the timerText. */
@@ -190,6 +226,24 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       tts.stop();
       tts.shutdown();
     }
+    if (mp != null) {
+      mp.release();
+    }
     super.onDestroy();
+  }
+
+  private void handleMusicToggle(boolean setting) {
+    playMusic = setting;
+    if (setting) {
+      if (inRound) { // restart the music if we're in the middle of a round
+        mp.start();
+      }
+    } else { // pause the music
+      mp.pause();
+    }
+  }
+
+  public void onToggleClicked(View view) {
+    boolean setting = ((ToggleButton) view).isChecked();
   }
 }
