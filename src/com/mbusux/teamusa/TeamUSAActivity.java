@@ -30,6 +30,9 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     private final long warmupTime = 10000;
     private final long breakTime = 10000; 
 
+    private final long roundWarning = 5000;
+    private final long breakWarning = 5000; // 5 seconds
+
     /** # of rounds completed */
     private int round = 0; 
     private int nRounds = 3;
@@ -70,6 +73,10 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       return new CountDownTimer(warmupTime, 1000) {
         public void onTick(long millisUntilFinished) {
           updateTimer(millisUntilFinished);
+          if(millisUntilFinished <= roundWarning + 1000) {
+            int seconds =  (int) millisUntilFinished / 1000;
+            speak(String.format("%d", seconds));
+          }
         }
         public void onFinish() {
           updateTimer(0);
@@ -84,6 +91,10 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       return new CountDownTimer(breakTime, 1000) {
         public void onTick(long millisUntilFinished) {
           updateTimer(millisUntilFinished);
+          if(millisUntilFinished <= breakWarning + 1000) {
+            int seconds =  (int) millisUntilFinished / 1000;
+            speak(String.format("%d", seconds));
+          }
         }
         public void onFinish() {
           updateTimer(0);
@@ -97,6 +108,10 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       return new CountDownTimer(roundTime, 1000) {
         public void onTick(long millisUntilFinished) {
           updateTimer(millisUntilFinished);
+          if(millisUntilFinished <= roundWarning + 900) {
+            int seconds =  (int) millisUntilFinished / 1000;
+            speak(String.format("%d", seconds));
+          }
         }
         public void onFinish() {
           updateTimer(0);

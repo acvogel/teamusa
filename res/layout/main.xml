@@ -16,7 +16,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="status"
-    android:textSize="60sp"
+    android:textSize="80sp"
     android:gravity="center"
   />
   <LinearLayout
