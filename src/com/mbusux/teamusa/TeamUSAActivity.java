@@ -25,22 +25,22 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     private TextToSpeech tts;
 
     /** Length of one jump rope round. */
-    //private final long roundTime = 180000; // 3 mins
-    //private final long warmupTime = 60000; // 1 min
-    //private final long breakTime = 60000; // 1 min
+    private final long roundTime = 180000; // 3 mins
+    private final long warmupTime = 60000; // 1 min
+    private final long breakTime = 60000; // 1 min
 
-    private final long roundTime = 20000; 
-    private final long warmupTime = 10000;
-    private final long breakTime = 10000; 
+    //private final long roundTime = 20000; 
+    //private final long warmupTime = 10000;
+    //private final long breakTime = 10000; 
 
     private final long roundWarning = 5000;
-    private final long breakWarning = 5000; // 5 seconds
+    private final long breakWarning = 5000; 
 
     private long timeLeft = 0; // time left on the current timer.
 
     /** # of rounds completed */
     private int round = 0; 
-    private int nRounds = 3;
+    private int nRounds = 4;
 
     private MediaPlayer mp;
     private MediaPlayer victory;
@@ -60,7 +60,6 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         ((Button) findViewById(R.id.start_button)).setOnClickListener(this);
-        //((Button) findViewById(R.id.pause_button)).setOnClickListener(this);
         ((Button) findViewById(R.id.music_toggle)).setOnClickListener(this);
         timerText = (TextView) findViewById(R.id.status);
         roundText = (TextView) findViewById(R.id.round);
@@ -85,8 +84,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
 
         timer = createWarmupTimer(warmupTime);
         roundText.setText("Team USA Fitness Challenge");
-        //mp = MediaPlayer.create(this, R.raw.punchout);
-        mp = MediaPlayer.create(this, R.raw.punchout_round);
+        mp = MediaPlayer.create(this, R.raw.punchout);
         mp.setLooping(true);
         victory = MediaPlayer.create(this, R.raw.victory);
         complete = MediaPlayer.create(this, R.raw.complete);
@@ -96,17 +94,15 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     public void onClick(View v) {
       switch(v.getId()) {
         case R.id.start_button:
+          state = State.WARMUP;
+          if (playMusic) {
+            mp.start();
+          }
           speak("Warmup round");
           roundText.setText("Warmup Round");
           timer.start();
-          state = State.WARMUP;
           round = 0;
           break;
-        
-        //case R.id.pause_button:
-        //  speak("Pause");
-        //  mp.pause();
-        //  break;
       }
     }
 
@@ -121,6 +117,13 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
           }
         }
         public void onFinish() {
+          if(playMusic) {
+            mp.stop();
+            mp.release(); 
+          }
+          mp = MediaPlayer.create(TeamUSAActivity.this, R.raw.punchout_round); // setup the next sound file
+          mp.setLooping(true);
+          //mp.prepareAsync();
           updateTimer(0);
           victory.seekTo(0);
           victory.start();
@@ -201,6 +204,10 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       timer = createRoundTimer(roundTime);
       timer.start();
       state = State.ROUND;
+      //mp.setDataSource(this, R.raw.punchout_round);
+      //try {
+      //  mp.prepare();
+      //} catch (Exception e) {}
       mp.seekTo(0);
       if (playMusic) {
         mp.start();
@@ -246,17 +253,23 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     if (mp != null) {
       mp.release();
     }
+    if (victory != null) {
+      victory.release();
+    }
+    if (complete != null) {
+      complete.release();
+    }
     super.onDestroy();
   }
 
   private void handleMusicToggle(boolean setting) {
     playMusic = setting;
     if (setting) { // start the music
-      if (!isPaused && (state == State.ROUND)) { // restart the music if we're in the middle of a round
+      if (!isPaused && (state == State.ROUND || state == state.WARMUP)) { // restart the music if we're in the middle of a round
         mp.start();
       }
     } else { // pause the music, if necessary
-      if(state == State.ROUND) 
+      if(state == State.ROUND || state == State.WARMUP) 
         mp.pause();
     }
   }
@@ -266,7 +279,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     isPaused = setting;
     if (isPaused) {
       timer.cancel();
-      if (playMusic && state == State.ROUND) {
+      if (playMusic && (state == State.ROUND || state == State.WARMUP)) {
         mp.pause();
       }
     } else { // resume
@@ -284,6 +297,9 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
           break;
         case WARMUP:
           timer = createWarmupTimer(timeLeft);
+          if (playMusic) {
+            mp.start();
+          }
           timer.start();
           break;
         case START: break; // pause doesn't do anything here
