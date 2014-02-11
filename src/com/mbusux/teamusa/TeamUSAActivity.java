@@ -1,6 +1,7 @@
 package com.mbusux.teamusa;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
@@ -36,6 +37,8 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
     /** # of rounds completed */
     private int round = 0; 
     private int nRounds = 3;
+
+    private MediaPlayer mp;
   
     /** Called when the activity is first created. */
     @Override
@@ -51,6 +54,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
 
         timer = createWarmupTimer();
         roundText.setText("Team USA Fitness Challenge");
+        mp = MediaPlayer.create(this, R.raw.punchout);
     }
 
     @Override
@@ -64,6 +68,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
         
         case R.id.pause_button:
           speak("Pause");
+          mp.pause();
           break;
       }
     }
@@ -115,6 +120,8 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
         }
         public void onFinish() {
           updateTimer(0);
+          mp.stop();
+          mp.prepareAsync();
           if(isCompleted()) {
             startBreak();
           } else {
@@ -145,6 +152,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       roundText.setText("Round " + round);
       timer = createRoundTimer();
       timer.start();
+      mp.start();
     }
 
     /** Functioned used to format the timerText. */
