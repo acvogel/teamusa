@@ -41,7 +41,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         ((Button) findViewById(R.id.start_button)).setOnClickListener(this);
-        //((Button) findViewById(R.id.stop_button)).setOnClickListener(this);
+        ((Button) findViewById(R.id.pause_button)).setOnClickListener(this);
         timerText = (TextView) findViewById(R.id.status);
         roundText = (TextView) findViewById(R.id.round);
         tts = new TextToSpeech(this, this);
@@ -59,8 +59,9 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
           timer.start();
           break;
         
-        //case R.id.stop_button:
-        //  break;
+        case R.id.pause_button:
+          speak("Pause");
+          break;
       }
     }
 
@@ -68,7 +69,6 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       updateTimer(warmupTime);
       return new CountDownTimer(warmupTime, 1000) {
         public void onTick(long millisUntilFinished) {
-          //timerText.setText(Long.toString(millisUntilFinished / 1000));
           updateTimer(millisUntilFinished);
         }
         public void onFinish() {
@@ -80,10 +80,9 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
 
     private CountDownTimer createBreakTimer() {
       updateTimer(breakTime);
-        speak("Break");
+      speak("Break");
       return new CountDownTimer(breakTime, 1000) {
         public void onTick(long millisUntilFinished) {
-          //timerText.setText(Long.toString(millisUntilFinished / 1000));
           updateTimer(millisUntilFinished);
         }
         public void onFinish() {
@@ -97,14 +96,22 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       updateTimer(roundTime);
       return new CountDownTimer(roundTime, 1000) {
         public void onTick(long millisUntilFinished) {
-          //timerText.setText(Long.toString(millisUntilFinished / 1000));
           updateTimer(millisUntilFinished);
         }
         public void onFinish() {
           updateTimer(0);
-          startBreak();
+          if(isCompleted()) {
+            startBreak();
+          } else {
+            completeWorkout();
+          }
         }
       };
+    }
+
+    private void completeWorkout() {
+      roundText.setText("Complete!");
+      speak("Workout complete. This is how champions are made.");
     }
 
     private void startBreak() {
@@ -113,17 +120,16 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
       timer.start();
     }
 
+    private boolean isCompleted() {
+      return round < nRounds;
+    }
+
     private void startRound() {
       round++;
-      if(round <= nRounds) {
-        speak("Round " + round);
-        roundText.setText("Round " + round);
-        timer = createRoundTimer();
-        timer.start();
-      } else {
-        roundText.setText("Complete!");
-        speak("Workout complete. This is how champions are made.");
-      }
+      speak("Round " + round);
+      roundText.setText("Round " + round);
+      timer = createRoundTimer();
+      timer.start();
     }
 
     /** Functioned used to format the timerText. */
@@ -144,9 +150,7 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
           || result == TextToSpeech.LANG_NOT_SUPPORTED) {
         Log.e("TTS", "This Language is not supported");
       } else {
-        speak("Team USA Fitness Challenge");
-        //btnSpeak.setEnabled(true);
-        //speakOut();
+        speak("Welcome to Team USA Fitness Challenge");
       }
     } else {
       Log.e("TTS", "Initilization Failed!");
@@ -155,5 +159,14 @@ public class TeamUSAActivity extends Activity implements OnClickListener, TextTo
 
   public void speak(String str) {
     tts.speak(str, TextToSpeech.QUEUE_FLUSH, null);
+  }
+
+  @Override
+  public void onDestroy() {
+    if (tts != null) {
+      tts.stop();
+      tts.shutdown();
+    }
+    super.onDestroy();
   }
 }
