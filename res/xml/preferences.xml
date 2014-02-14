@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <CheckBoxPreference
+        android:key="pref_sync"
+        android:title="blah"
+        android:summary="foo"
+        android:defaultValue="true" />
+  <!--
   <EditTextPreference
     android:key="num_rounds"
     android:title="Number of Rounds"
@@ -20,4 +26,5 @@
     android:title="Warmup Length (seconds)"
     android:defaultValue="60"
   />
+  -->
 </PreferenceScreen>
