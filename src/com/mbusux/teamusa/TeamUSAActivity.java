@@ -6,6 +6,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.SystemClock;
+import android.preference.PreferenceFragment;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
@@ -311,4 +312,13 @@ public class TeamUSAActivity extends /*ActionBar*/Activity implements OnClickLis
   public void onToggleClicked(View view) {
     boolean setting = ((ToggleButton) view).isChecked();
   }
+
+  public static class PrefsFragment extends PreferenceFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.preferences); 
+    }
+  }
+
 }

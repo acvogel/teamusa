@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <CheckBoxPreference
+        android:key="pref_sync"
+        android:title="blah"
+        android:summary="foo"
+        android:defaultValue="true" />
+  <!--
+  <EditTextPreference
+    android:key="num_rounds"
+    android:title="Number of Rounds"
+    android:defaultValue="3"
+  />
+  <EditTextPreference
+    android:key="round_time"
+    android:title="Round Length (seconds)"
+    android:defaultValue="180"
+  />
+  <EditTextPreference
+    android:key="break_time"
+    android:title="Break Length (seconds)"
+    android:defaultValue="60"
+  />
+  <EditTextPreference
+    android:key="warmup_time"
+    android:title="Warmup Length (seconds)"
+    android:defaultValue="60"
+  />
+  -->
+</PreferenceScreen>
