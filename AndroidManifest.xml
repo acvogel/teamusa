@@ -3,7 +3,6 @@
       package="com.mbusux.teamusa"
       android:versionCode="1"
       android:versionName="1.0">
-    <!--<application android:label="@string/app_label" android:icon="@drawable/ic_launcher"> -->
     <application android:label="@string/app_label" android:icon="@drawable/usa">
         <activity android:name="TeamUSAActivity"
                   android:label="@string/app_label">
