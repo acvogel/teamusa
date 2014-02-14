@@ -1,6 +1,7 @@
 package com.mbusux.teamusa;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -9,6 +10,9 @@ import android.os.SystemClock;
 import android.preference.PreferenceFragment;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,7 +22,7 @@ import android.widget.ToggleButton;
 
 import java.util.Locale;
 
-public class TeamUSAActivity extends /*ActionBar*/Activity implements OnClickListener, TextToSpeech.OnInitListener {
+public class TeamUSAActivity extends ActionBarActivity implements OnClickListener, TextToSpeech.OnInitListener {
     
     private CountDownTimer timer;
     private TextView timerText;
@@ -82,14 +86,15 @@ public class TeamUSAActivity extends /*ActionBar*/Activity implements OnClickLis
             handlePauseToggle(isChecked);
           }
         });
-        
-
         timer = createWarmupTimer(warmupTime);
         roundText.setText("Team USA Fitness Challenge");
         mp = MediaPlayer.create(this, R.raw.punchout);
         mp.setLooping(true);
         victory = MediaPlayer.create(this, R.raw.victory);
         complete = MediaPlayer.create(this, R.raw.complete);
+
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -321,4 +326,20 @@ public class TeamUSAActivity extends /*ActionBar*/Activity implements OnClickLis
     }
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.main_activity_actions, menu);
+    return super.onCreateOptionsMenu(menu);
+  }
+
+  //@Override
+  //public boolean onOptionsItemSelected(MenuItem item) {
+  //  switch (item.getItemId()) {
+  //    case R.id.settings:
+  //      getFragmentManager().beginTransaction().add(android.R.id.content, new PrefsFragment()).commit();
+  //      return true;
+  //  }
+  //  return false;
+  //}
 }

@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">Team USA Fitness Challenge</string>
     <string name="app_label">Team USA</string>
+    <string name="action_preferences">Settings</string>
 </resources>
