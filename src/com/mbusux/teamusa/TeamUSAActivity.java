@@ -1,5 +1,6 @@
 package com.mbusux.teamusa;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -16,7 +17,7 @@ import android.widget.ToggleButton;
 
 import java.util.Locale;
 
-public class TeamUSAActivity extends Activity implements OnClickListener, TextToSpeech.OnInitListener {
+public class TeamUSAActivity extends /*ActionBar*/Activity implements OnClickListener, TextToSpeech.OnInitListener {
     
     private CountDownTimer timer;
     private TextView timerText;

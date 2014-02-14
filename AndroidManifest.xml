@@ -3,8 +3,10 @@
       package="com.mbusux.teamusa"
       android:versionCode="1"
       android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="13" android:targetSdkVersion="17" />
     <application android:label="@string/app_label" android:icon="@drawable/usa">
         <activity android:name="TeamUSAActivity"
+                  android:theme="@android:style/Theme.Holo.Light"
                   android:label="@string/app_label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
