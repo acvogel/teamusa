@@ -9,6 +9,7 @@ import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.preference.PreferenceFragment;
 import android.speech.tts.TextToSpeech;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,9 +21,20 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import android.support.v4.app.FragmentActivity;
+
+import java.util.HashMap;
 import java.util.Locale;
 
-public class TeamUSAActivity extends ActionBarActivity implements OnClickListener, TextToSpeech.OnInitListener {
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import ai.wit.sdk.Wit;
+import ai.wit.sdk.IWitListener;
+
+//public class TeamUSAActivity extends ActionBarActivity implements OnClickListener, TextToSpeech.OnInitListener {
+public class TeamUSAActivity extends FragmentActivity implements OnClickListener, TextToSpeech.OnInitListener, IWitListener {
     
     private CountDownTimer timer;
     private TextView timerText;
@@ -31,10 +43,11 @@ public class TeamUSAActivity extends ActionBarActivity implements OnClickListene
     private TextToSpeech tts;
 
     /** Length of one jump rope round. */
-    private final long roundTime = 180000; // 3 mins
-    private final long warmupTime = 60000; // 1 min
-    private final long breakTime = 60000; // 1 min
+    private long roundTime = 180000; // 3 mins
+    private long warmupTime = 60000; // 1 min
+    private long breakTime = 60000; // 1 min
 
+    // shorter times for testing
     //private final long roundTime = 20000; 
     //private final long warmupTime = 10000;
     //private final long breakTime = 10000; 
@@ -49,7 +62,7 @@ public class TeamUSAActivity extends ActionBarActivity implements OnClickListene
     private int nRounds = 4;
 
     private MediaPlayer mp;
-    private MediaPlayer victory;
+    private MediaPlayer victory; 
     private MediaPlayer complete;
 
     private boolean playMusic = true;
@@ -95,6 +108,12 @@ public class TeamUSAActivity extends ActionBarActivity implements OnClickListene
 
         //ActionBar actionBar = getSupportActionBar();
         //actionBar.setDisplayHomeAsUpEnabled(true);
+
+        // Initialize Fragment
+        Wit wit_fragment = (Wit) getSupportFragmentManager().findFragmentByTag("wit_fragment");
+        if (wit_fragment != null) {
+          wit_fragment.setAccessToken("N44RHEZBJABFZJ434FKSEVUGVUOIQTVL");
+        }
     }
 
     @Override
@@ -329,7 +348,8 @@ public class TeamUSAActivity extends ActionBarActivity implements OnClickListene
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuInflater inflater = getMenuInflater();
-    inflater.inflate(R.menu.main_activity_actions, menu);
+    // XXX removed to compile
+    //inflater.inflate(R.menu.main_activity_actions, menu);
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -342,4 +362,32 @@ public class TeamUSAActivity extends ActionBarActivity implements OnClickListene
   //  }
   //  return false;
   //}
+
+ @Override
+ public void witDidGraspIntent(String intent, HashMap<String, JsonElement> entities, String body, double confidence, Error error) {
+     //((TextView) findViewById(R.id.txtText)).setText(body);
+     //Gson gson = new GsonBuilder().setPrettyPrinting().create();
+     //String jsonOutput = gson.toJson(entities);
+     //((TextView) findViewById(R.id.jsonView)).setText(Html.fromHtml("<span><b>Intent: " + intent + "<b></span><br/>") +
+     //        jsonOutput + Html.fromHtml("<br/><span><b>Confidence: " + confidence + "<b></span>"));
+     // handle intents
+    if (intent.equals("round_count")) {
+      //speak("round count");
+      if(entities.containsKey("number")) {
+        speak("has number entity");
+        JsonObject numberEntity = entities.get("number").getAsJsonObject();
+        int newRounds = numberEntity.get("value").getAsInt();
+        nRounds = newRounds + 1; // include warmup round
+        speak("Set to " + newRounds + "rounds");
+      }
+    } else if (intent.equals("round_length")) {
+      if(entities.containsKey("duration")) {
+        JsonObject durationEntity = entities.get("duration").getAsJsonObject();
+        int newLength = durationEntity.get("value").getAsInt();
+        String lengthString = durationEntity.get("body").getAsString();
+        roundTime = newLength * 1000;
+        speak("Rounds are now " + lengthString + " long");
+      }
+    }
+ }
 }

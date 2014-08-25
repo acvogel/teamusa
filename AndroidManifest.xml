@@ -4,6 +4,7 @@
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="13" android:targetSdkVersion="17" />
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application android:label="@string/app_label" android:icon="@drawable/usa">
         <activity android:name="TeamUSAActivity"
                   android:theme="@style/Theme.AppCompat.Light"
